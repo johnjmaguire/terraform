@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/service/autoscaling"
+	"github.com/aws/aws-sdk-go/service/cloudwatch"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/ecs"
 	"github.com/aws/aws-sdk-go/service/elasticache"
@@ -36,6 +37,7 @@ type Config struct {
 }
 
 type AWSClient struct {
+	cloudwatchconn  *cloudwatch.CloudWatch
 	ec2conn         *ec2.EC2
 	ecsconn         *ecs.ECS
 	elbconn         *elb.ELB
@@ -138,6 +140,9 @@ func (c *Config) Client() (interface{}, error) {
 
 		log.Println("[INFO] Initializing Lambda Connection")
 		client.lambdaconn = lambda.New(awsConfig)
+
+		log.Println("[INFO] Initializing CloudWatch SDK connection")
+		client.cloudwatchconn = cloudwatch.New(awsConfig)
 	}
 
 	if len(errs) > 0 {
